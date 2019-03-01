@@ -12,12 +12,13 @@ import { confirmEmail } from "./routes/confirmEmail";
 import { genSchema } from "./utils/genSchema";
 import { redisSessionPrefix } from "./constants";
 import { createTestConn } from "./testUtils/createTestConn";
+import { IS_TEST, IS_PROD } from "./config";
 
-const SESSION_SECRET = "ajslkjalksjdfkl";
+const SESSION_SECRET = "chachacha";
 const RedisStore = connectRedis(session as any);
 
 export const startServer = async () => {
-  if (process.env.NODE_ENV === "test") {
+  if (IS_TEST) {
     await redis.flushall();
   }
 
@@ -54,7 +55,7 @@ export const startServer = async () => {
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: IS_PROD,
         maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
       }
     } as any)
@@ -62,24 +63,23 @@ export const startServer = async () => {
 
   const cors = {
     credentials: true,
-    origin:
-      process.env.NODE_ENV === "test"
-        ? "*"
-        : (process.env.FRONTEND_HOST as string)
+    origin: IS_TEST ? "*" : (process.env.FRONTEND_HOST as string)
   };
 
   server.express.get("/confirm/:id", confirmEmail);
 
-  if (process.env.NODE_ENV === "test") {
+  if (IS_TEST) {
     await createTestConn(true);
   } else {
     await createTypeormConn();
   }
+
+  const port = IS_TEST ? 0 : process.env.PORT || 4000;
   const app = await server.start({
     cors,
-    port: process.env.NODE_ENV === "test" ? 0 : 4000
+    port
   });
-  console.log("Server is running on localhost:4000");
+  console.log(`Server is running on port ${port}`);
 
   return app;
 };

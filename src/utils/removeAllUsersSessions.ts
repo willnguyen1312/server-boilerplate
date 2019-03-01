@@ -8,7 +8,7 @@ export const removeAllUsersSessions = async (userId: string, redis: Redis) => {
     -1
   );
 
-  const promises = [];
+  const promises: any = [];
   // tslint:disable-next-line:prefer-for-of
   for (let i = 0; i < sessionIds.length; i += 1) {
     promises.push(redis.del(`${redisSessionPrefix}${sessionIds[i]}`));
