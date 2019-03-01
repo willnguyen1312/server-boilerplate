@@ -23,10 +23,10 @@ export const sendEmail = async (
       from: "Sender Name <sender@example.com>",
       to: `Recipient <${recipient}>`,
       subject: "Nodemailer is unicode friendly ✔",
-      text: "Hello to myself!",
+      text: "Hi there!",
       html: `<html>
         <body>
-        <p>Testing SparkPost - the world's most awesomest email service!</p>
+        <p>Testing Nodemailer - the world's most awesomest email package!</p>
         <a href="${url}">${linkText}</a>
         </body>
         </html>`
